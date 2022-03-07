@@ -29,30 +29,14 @@ with open(urlsFilePath) as urlsFile:
 os.chdir("jars")
 
 for url in urls:
-    parts = url.rstrip().split("/")
-    org = parts[3]
-    repo = parts[4]
-
-    apiUrl = "https://api.github.com/repos/{0}/{1}/releases/latest".format(org, repo)
-    data = {}
-
-    try:
-        with urllib.request.urlopen(apiUrl) as apiRequest:
-            data = json.loads(apiRequest.read().decode())
-    except urllib.error.HTTPError:
-        # Usually 404, but may be others
-        continue
-
-    if "assets" in data:
-        toDownload = data["assets"][0]["browser_download_url"]
-    else:
-        continue
+    parts = url.rstrip().split(" ")
+    toDownload = parts[0]
+    outputFile = parts[1]
 
     if not toDownload.endswith('.jar'):
         continue
 
-    fileName = "{0}-{1}.jar".format(org, repo)
-    urllib.request.urlretrieve(toDownload, fileName)
+    urllib.request.urlretrieve(toDownload, outputFile)
     count += 1
 
 print("{0} files downloaded".format(count))
